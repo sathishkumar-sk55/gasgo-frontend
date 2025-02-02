@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {Pencil2Icon} from "@radix-ui/react-icons";
 import {useRouter} from "next/navigation";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 
 
 export let currentSelectedContactId: string | null = null;
@@ -26,7 +26,7 @@ export function OrderContactSelection() {
     useEffect(() => {
         const getContactList = async () => {
             try {
-                const response = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
+                const response: AxiosResponse<ContactData[]> = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
                     "/contact/getAllContactByUserId/" + sessionStorage.getItem("userId"));
                 if (response.status === 200) {
                     setContactList(response.data);
@@ -35,9 +35,8 @@ export function OrderContactSelection() {
                 console.error(error);
             }
         };
-
         getContactList();
-    }, []); // Empty dependency array means this effect runs once on component mount
+    }, []);
 
 
     const onClickOnContactEdit = (contact: ContactData) => {

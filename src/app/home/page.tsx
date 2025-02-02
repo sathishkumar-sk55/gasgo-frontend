@@ -1,21 +1,26 @@
 "use client"
 import React from "react";
-import axios from "axios"
 import Link from "next/link";
 import {CarouselHome} from "@/app/components/CarouseHome";
 import {CarouselData} from "@/models/CarouselData";
+import Navbar from "@/app/components/Navbar";
+import { useSession } from "next-auth/react"
 
 
-export default function Login() {
+
+
+export default function Home() {
+
+
 
     const carouselCardList: CarouselData[] = [
         {cardName: "Place Order", hyperLink: "/placeOrder"},
         {cardName: "Login", hyperLink: "/login"},
-        // Add more cards as needed
     ];
 
-
     return (
+        <div>
+
         <div className="bg-black">
             <div className="relative flex flex-row justify-between border-black text-white text-2xl bg-emerald-200">
                 <div>Home</div>
@@ -26,6 +31,6 @@ export default function Login() {
                 <CarouselHome carouselCardList={carouselCardList}></CarouselHome>
             </div>
         </div>
-
+        </div>
     );
 }

@@ -1,17 +1,10 @@
 "use client"
-import axios, {AxiosResponse} from 'axios';
 import React, {useEffect} from "react";
-import {useRouter} from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
+import { signIn } from "@/lib/auth"
+// import { signIn } from "next-auth/react"
+import {handleSignInAction} from "@/lib/HandleSignInAction";
 
-interface AuthResponse {
-
-    userId: number;
-    username: string;
-    role: string;
-    isAuthentication: boolean,
-    token: string;
-
-}
 
 
 export default function Login() {
@@ -37,20 +30,15 @@ export default function Login() {
     }, [user]);
 
 
-    const loginOnClick = async () => {
+    const loginOnClick = async (formData:FormData) => {
         console.log("loginOnClick");
         try {
             setLoading(true);
             setButtonDisabled(true);
-            console.log(process.env.NEXT_PUBLIC_USERHUB_BASE_URL);
-            const response: AxiosResponse<AuthResponse> = await axios.post(process.env.NEXT_PUBLIC_USERHUB_BASE_URL + "/user/verify/auth", user);
 
-            console.log(response);
+            console.log(formData);
 
-            if (response.status == 202) {
-                sessionStorage.setItem('userId', response.data.userId.toString());
-                router.push("/home");
-            }
+            signIn("credentials",formData)
 
         } catch (error: any) {
 
@@ -69,37 +57,43 @@ export default function Login() {
                 <label className="text-center text-red-600"
                        htmlFor="login error"
                 >{loginFailure ? "Invalid Credentials!!!" : ""}</label>
-                <form className="mt-6">
+                <form className="mt-6" action={ (formData:FormData) => {
+                    console.log("inside 135654"+formData.get("Email"));
+                    handleSignInAction(formData)
+                }}>
+
+                    <div className="">
+                        <label htmlFor="username">User Name </label>
+                        <input
+                            id="username"
+                            name="Email"
+                            type="email"
+                            placeholder="username"
+                            className="input input-bordered input-success w-full max-w-xs text-white text-center bg-transparent/10"
+                            onChange={(event) => setUser({...user, username: event.target.value})}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password">Password </label>
+                        <input
+                            id="password"
+                            name="Password"
+                            type="password"
+                            placeholder="password"
+                            value={user.password}
+                            className="input input-bordered input-success w-full max-w-xs text-white text-center bg-transparent/10"
+                            onChange={(event) => setUser({...user, password: event.target.value})}
+                        />
+                    </div>
+                    <div className="flex items-center justify-center pt-2.5 pb-2.5">
+                        <button
+                            type={"submit"}
+                            disabled={buttonDisabled}
+                            className="btn btn-wide flex items-center justify-center bg-emerald-300 pl-1 pr-1 pt-0.5 pb-0.5">{loading ? "Loading..." : "Login"}
+                        </button>
+                    </div>
                 </form>
 
-                <div className="">
-                    <label htmlFor="username">User Name </label>
-                    <input
-                        id="username"
-                        type="text"
-                        placeholder="username"
-                        className="input input-bordered input-success w-full max-w-xs text-white text-center bg-transparent/10"
-                        onChange={(event) => setUser({...user, username: event.target.value})}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password </label>
-                    <input
-                        id="password"
-                        type="text"
-                        placeholder="password"
-                        value={user.password}
-                        className="input input-bordered input-success w-full max-w-xs text-white text-center bg-transparent/10"
-                        onChange={(event) => setUser({...user, password: event.target.value})}
-                    />
-                </div>
-                <div className="flex items-center justify-center pt-2.5 pb-2.5">
-                    <button
-                        onClick={loginOnClick}
-                        disabled={buttonDisabled}
-                        className="btn btn-wide flex items-center justify-center bg-emerald-300 pl-1 pr-1 pt-0.5 pb-0.5">{loading ? "Loading..." : "Login"}
-                    </button>
-                </div>
 
             </div>
         </div>
