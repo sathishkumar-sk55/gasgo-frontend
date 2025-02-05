@@ -1,14 +1,10 @@
 "use client"
 import React, {useEffect} from "react";
 import {redirect, useRouter} from "next/navigation";
-import { signIn } from "@/lib/auth"
-// import { signIn } from "next-auth/react"
+
 import {handleSignInAction} from "@/lib/HandleSignInAction";
 
-
-
 export default function Login() {
-
 
     const [user, setUser] = React.useState(
         {
@@ -29,19 +25,25 @@ export default function Login() {
         }
     }, [user]);
 
+    const loginOnClick = async () => {
 
-    const loginOnClick = async (formData:FormData) => {
-        console.log("loginOnClick");
         try {
             setLoading(true);
             setButtonDisabled(true);
 
-            console.log(formData);
+             const boolean = await handleSignInAction(user)
 
-            signIn("credentials",formData)
+            if (boolean) {
+                router.push("/home");
+                }
+            else {
+                console.log("error in loginOnClick 1");
+                setLoginFailure(true);
+                user.password = "";
+                setLoading(false);
+            }
 
         } catch (error: any) {
-
             console.log(error.message);
             setLoginFailure(true);
             user.password = "";
@@ -57,17 +59,14 @@ export default function Login() {
                 <label className="text-center text-red-600"
                        htmlFor="login error"
                 >{loginFailure ? "Invalid Credentials!!!" : ""}</label>
-                <form className="mt-6" action={ (formData:FormData) => {
-                    console.log("inside 135654"+formData.get("Email"));
-                    handleSignInAction(formData)
-                }}>
+                <form className="mt-6">
 
                     <div className="">
                         <label htmlFor="username">User Name </label>
                         <input
                             id="username"
-                            name="Email"
-                            type="email"
+                            name="username"
+                            type="username"
                             placeholder="username"
                             className="input input-bordered input-success w-full max-w-xs text-white text-center bg-transparent/10"
                             onChange={(event) => setUser({...user, username: event.target.value})}
@@ -89,6 +88,7 @@ export default function Login() {
                         <button
                             type={"submit"}
                             disabled={buttonDisabled}
+                            onClick={() => loginOnClick()}
                             className="btn btn-wide flex items-center justify-center bg-emerald-300 pl-1 pr-1 pt-0.5 pb-0.5">{loading ? "Loading..." : "Login"}
                         </button>
                     </div>

@@ -25,7 +25,7 @@ export default function Home() {
             <div className="relative flex flex-row justify-between border-black text-white text-2xl bg-emerald-200">
                 <div>Home</div>
                 <Link className="text-2xl bg-amber-300 items-end"
-                      href="/placeOrder">PlaceOrder{sessionStorage.getItem("userId")}</Link>
+                      href="/placeOrder">PlaceOrder</Link>
             </div>
             <div className="flex justify-center items-center h-screen text-">
                 <CarouselHome carouselCardList={carouselCardList}></CarouselHome>

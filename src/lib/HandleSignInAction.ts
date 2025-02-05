@@ -1,12 +1,20 @@
 "use server";
+import { signIn } from '@/lib/auth';
 
-import { signIn } from "./auth";
-
-export const  handleSignInAction= async (formData:FormData) => {
+export const  handleSignInAction= async (user:any) => {
     try {
-        console.log("inside handleSignInAction "+JSON.stringify(formData));
-        await signIn("credentials",formData, { redirectTo: "/home" });
+        // await signIn("credentials",user, { redirectTo: "/home" });
+        await signIn("credentials", {
+                redirect: false,
+                username: user.username,
+                password: user.password
+            }
+            ,);
+
+
     } catch (error) {
-        throw error;
+        console.log("error in Sign in "+error);
+        return false;
     }
+    return true;
 };

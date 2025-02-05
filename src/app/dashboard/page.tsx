@@ -1,6 +1,6 @@
 import { SessionProvider } from "next-auth/react"
 import Dashboard  from "./Dashboard"
-import {checkIsAuthenticated} from "@/lib/AuthState";
+import checkIsAuthenticated from "@/lib/AuthState";
 import {redirect} from "next/navigation";
 
 export default async function Administrator() {
