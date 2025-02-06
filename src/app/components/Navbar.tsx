@@ -2,12 +2,10 @@
 import * as React from "react"
 import Link from "next/link";
 import Image from "next/image";
-import logo from '@/../public/HomeLogo.svg'
-import profile from '@/../public/Profile.svg'
-import {auth} from '@/lib/auth'
+import logo from '../../../public/navBar/HomeLogo.svg'
+import profile from '../../../public/navBar/Profile.svg'
 import checkIsAuthenticated from '@/lib/AuthState'
 import {useEffect, useState} from "react";
-
 
 
 export default function Navbar() {
@@ -17,10 +15,9 @@ export default function Navbar() {
         const getIsLoggedIn = async () => {
             const isLoggedIn = await checkIsAuthenticated()
                 .then((data)=> {setIsLoggedIn(data)})
-            console.log('isLoggedIn', isLoggedIn);
         }
         getIsLoggedIn();
-    }, [isLoggedIn]);
+    }, []);
 
     return (
         <nav className="flex justify-between bg-black">
