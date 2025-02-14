@@ -1,10 +1,6 @@
 import axios, {AxiosResponse} from "axios";
 import {User} from "@/models/AuthResponse";
-export interface ApplicationUser {
-    userId: number | null | undefined,
-    username: string
-    email: string
-}
+
 
 export async function getUserFromDb(credentials: any): Promise<User | null> {
     try {
@@ -23,8 +19,7 @@ export async function getUserFromDb(credentials: any): Promise<User | null> {
                 }
             }
         }
-    }
-    catch (error: any) {
+    } catch (error: any) {
         console.log(error.message);
     }
     return null;

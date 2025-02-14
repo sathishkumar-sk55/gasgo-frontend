@@ -13,6 +13,7 @@ import {
 import {Pencil2Icon} from "@radix-ui/react-icons";
 import {useRouter} from "next/navigation";
 import axios, {AxiosResponse} from "axios";
+import checkIsAuthenticated from "@/lib/AuthState";
 
 
 export let currentSelectedContactId: string | null = null;
@@ -25,15 +26,19 @@ export function OrderContactSelection() {
 
     useEffect(() => {
         const getContactList = async () => {
-            try {
-                const response: AxiosResponse<ContactData[]> = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
-                    "/contact/getAllContactByUserId/" + sessionStorage.getItem("userId"));
-                if (response.status === 200) {
-                    setContactList(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            }
+            await checkIsAuthenticated()
+                .then(async (userId) => {
+                    try {
+                        const response: AxiosResponse<ContactData[]> = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
+                            "/contact/getAllContactByUserId/" + userId);
+                        if (response.status === 200) {
+                            setContactList(response.data);
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
+                })
+
         };
         getContactList();
     }, []);

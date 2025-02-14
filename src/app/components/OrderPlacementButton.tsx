@@ -5,17 +5,27 @@ import {currentSelectedAddressId} from "@/app/components/OrderAddressSelection"
 import {currentSelectedContactId} from "@/app/components/OrderContactSelection"
 import {ToastMessage} from "@/lib/utils";
 import axios from "axios";
+import checkIsAuthenticated from "@/lib/AuthState";
 
 
 async function sentRequest(order: OrderData) {
-    const response = await axios.post(process.env.NEXT_PUBLIC_ORDER_MANAGER_BASE_URL +
-        "/order/PlaceOrder", order);
-    if (response.status === 201) {
-        ToastMessage("Order placed", "Order Id : " + response.data.orderId);
-        console.log(response.data.orderId);
-    } else {
-        ToastMessage(response.data.message, "Error Sending Request");
-    }
+    await checkIsAuthenticated()
+        .then(async (userId) => {
+            try {
+                const response = await axios.post(process.env.NEXT_PUBLIC_ORDER_MANAGER_BASE_URL +
+                    "/order/PlaceOrder", order);
+                if (response.status === 201) {
+                    ToastMessage("Order placed", "Order Id : " + response.data.orderId);
+                    console.log(response.data.orderId);
+                } else {
+                    ToastMessage(response.data.message, "Error Sending Request");
+                }
+            } catch (error) {
+                ToastMessage("Error", "Error While Sending Request")
+                console.error(error);
+            }
+        })
+
 }
 
 function createRequest(userId: string): OrderData {
@@ -38,7 +48,8 @@ export default function OrderPlacementButton() {
             ToastMessage("Address missing", "please select a address and try again")
         }
         try {
-            userId = sessionStorage.getItem("userId");
+            // userId = sessionStorage.getItem("userId");
+
             if (userId == null) {
                 ToastMessage("userId not found", "userId not found in session Storage, please closed the browser and try again")
             } else {

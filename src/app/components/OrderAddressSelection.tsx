@@ -13,12 +13,11 @@ import {
 import {Pencil2Icon} from "@radix-ui/react-icons";
 import {useRouter} from "next/navigation";
 import axios from "axios";
+import checkIsAuthenticated from "@/lib/AuthState";
 
 
 export let currentSelectedAddressId: string | null = null;
 
-
-// Update the function to accept RadioAddressProps
 export function OrderAddressSelection() {
 
     const router = useRouter();
@@ -27,19 +26,23 @@ export function OrderAddressSelection() {
 
     useEffect(() => {
         const getAddressList = async () => {
-            try {
-                const response = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
-                    "/address/getAllAddressByUserId/" + sessionStorage.getItem("userId"));
-                if (response.status === 200) {
-                    setAddressList(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            }
+            await checkIsAuthenticated()
+                .then(async (userId) => {
+                    try {
+
+                        const response = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
+                            "/address/getAllAddressByUserId/" + userId);
+                        if (response.status === 200) {
+                            setAddressList(response.data);
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
+                })
         };
 
         getAddressList();
-    }, []); // Empty dependency array means this effect runs once on component mount
+    }, []);
 
 
     const onClickOnAddressEdit = (address: AddressData) => {
