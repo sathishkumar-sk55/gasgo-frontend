@@ -1,4 +1,3 @@
-import {useState} from "react";
 import {OrderData} from "@/models/OrderData";
 import {Button} from "@/components/ui/button";
 import {currentSelectedAddressId} from "@/app/components/OrderAddressSelection"
@@ -6,7 +5,7 @@ import {currentSelectedContactId} from "@/app/components/OrderContactSelection"
 import {ToastMessage} from "@/lib/utils";
 import axios from "axios";
 import checkIsAuthenticated from "@/lib/AuthState";
-
+import {user} from "@/app/components/Navbar"
 
 async function sentRequest(order: OrderData) {
     await checkIsAuthenticated()
@@ -28,7 +27,7 @@ async function sentRequest(order: OrderData) {
 
 }
 
-function createRequest(userId: string): OrderData {
+function createRequest(userId: number): OrderData {
     return ({
         addressId: currentSelectedAddressId,
         contactId: currentSelectedContactId,
@@ -40,7 +39,7 @@ function createRequest(userId: string): OrderData {
 export default function OrderPlacementButton() {
 
     const onOrderSubmit = async () => {
-        let userId: string | null;
+
 
         if (currentSelectedContactId == null) {
             ToastMessage("Contact missing", "please select a Contact and try again")
@@ -48,12 +47,11 @@ export default function OrderPlacementButton() {
             ToastMessage("Address missing", "please select a address and try again")
         }
         try {
-            // userId = sessionStorage.getItem("userId");
 
-            if (userId == null) {
+            if (user?.userId == null) {
                 ToastMessage("userId not found", "userId not found in session Storage, please closed the browser and try again")
             } else {
-                sentRequest(createRequest(userId));
+                sentRequest(createRequest(user.userId));
             }
         } catch (error) {
             console.error(error);

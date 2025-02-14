@@ -3,6 +3,8 @@ import React, {useEffect} from "react";
 import {redirect, useRouter} from "next/navigation";
 
 import {handleSignInAction} from "@/lib/HandleSignInAction";
+import getUserFromAuth from "@/lib/AuthState";
+import {User} from "@/models/AuthResponse";
 
 export default function Login() {
 
@@ -31,18 +33,24 @@ export default function Login() {
             setLoading(true);
             setButtonDisabled(true);
 
-             const boolean = await handleSignInAction(user)
+            await handleSignInAction(user).then(async (isLoggedin: boolean) => {
+                    if (isLoggedin) {
+                        await getUserFromAuth()
+                            .then((LoggedInUser: User | null) => {
+                                    sessionStorage.setItem("user", JSON.stringify(LoggedInUser));
+                                    console.log(LoggedInUser)
+                                    router.push("/home")
+                                }
+                            )
 
-            if (boolean) {
-                router.push("/home");
+                    } else {
+                        console.log("error in loginOnClick 1");
+                        setLoginFailure(true);
+                        user.password = "";
+                        setLoading(false);
+                    }
                 }
-            else {
-                console.log("error in loginOnClick 1");
-                setLoginFailure(true);
-                user.password = "";
-                setLoading(false);
-            }
-
+            )
         } catch (error: any) {
             console.log(error.message);
             setLoginFailure(true);

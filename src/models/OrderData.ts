@@ -1,6 +1,6 @@
 export interface OrderData {
     orderType: string;
-    userId: string;
-    addressId: string | null;
-    contactId: string | null;
+    userId: number;
+    addressId: number | null;
+    contactId: number | null;
 }

@@ -13,10 +13,9 @@ import {
 import {Pencil2Icon} from "@radix-ui/react-icons";
 import {useRouter} from "next/navigation";
 import axios, {AxiosResponse} from "axios";
-import checkIsAuthenticated from "@/lib/AuthState";
+import {user} from "@/app/components/Navbar"
 
-
-export let currentSelectedContactId: string | null = null;
+export let currentSelectedContactId: number | null = null;
 
 export function OrderContactSelection() {
 
@@ -26,20 +25,19 @@ export function OrderContactSelection() {
 
     useEffect(() => {
         const getContactList = async () => {
-            await checkIsAuthenticated()
-                .then(async (userId) => {
-                    try {
-                        const response: AxiosResponse<ContactData[]> = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
-                            "/contact/getAllContactByUserId/" + userId);
-                        if (response.status === 200) {
-                            setContactList(response.data);
-                        }
-                    } catch (error) {
-                        console.error(error);
-                    }
-                })
 
-        };
+            try {
+                const response: AxiosResponse<ContactData[]> = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
+                    "/contact/getAllContactByUserId/" + user?.userId);
+                if (response.status === 200) {
+                    setContactList(response.data);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+
         getContactList();
     }, []);
 
@@ -49,27 +47,25 @@ export function OrderContactSelection() {
         router.push("placeOrder/editContact")
     }
 
-    const onAddressSelected = (selectedContactId: string) => {
+    const onAddressSelected = (selectedContactId: number) => {
         currentSelectedContactId = selectedContactId;
-        sessionStorage.setItem('selectedContactId', selectedContactId);
-        console.log("saved selectedContactId : " + selectedContactId);
     }
 
     return (
-        <div className="border-8 rounded-8xl divide-y-2 divide-yellow-500 pb-2.5">
+        <div className=" ml-10 bg-blue-900 bg-transparent/40  divide-yellow-500 p-4">
             <div>select delivery Contact</div>
-            <RadioGroup onValueChange={(value) => {
-                onAddressSelected(value);
+            <RadioGroup onValueChange={(value: string) => {
+                onAddressSelected(parseInt(value));
             }}>
                 {contactList.map((contact) => (
-                    <div className="flex items-center" key={contact.contactId}>
-                        <RadioGroupItem value={String(contact.contactId)}
+                    <div className="flex items-center " key={contact.contactId}>
+                        <RadioGroupItem value={contact.contactId.toString()}
                                         id={`radio-${contact.contactId}`}/>
-                        <Label className="pl-4" htmlFor={`radio-${contact.contactId}`}>
+                        <Label className="pl-4 " htmlFor={`radio-${contact.contactId}`}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger>{contact.contactType}</DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                    className="flex-row justify-between bg-amber-900 bg-black bg-transparent/75 text-white">
+                                    className="flex-row justify-between   bg-black text-white">
                                     <DropdownMenuLabel>
                                         <div
                                             className="relative flex flex-row justify-between border-black text-white text-2xl">

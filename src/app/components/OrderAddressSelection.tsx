@@ -13,10 +13,10 @@ import {
 import {Pencil2Icon} from "@radix-ui/react-icons";
 import {useRouter} from "next/navigation";
 import axios from "axios";
-import checkIsAuthenticated from "@/lib/AuthState";
+import {user} from "@/app/components/Navbar"
 
 
-export let currentSelectedAddressId: string | null = null;
+export let currentSelectedAddressId: number | null = null;
 
 export function OrderAddressSelection() {
 
@@ -26,19 +26,18 @@ export function OrderAddressSelection() {
 
     useEffect(() => {
         const getAddressList = async () => {
-            await checkIsAuthenticated()
-                .then(async (userId) => {
-                    try {
 
-                        const response = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
-                            "/address/getAllAddressByUserId/" + userId);
-                        if (response.status === 200) {
-                            setAddressList(response.data);
-                        }
-                    } catch (error) {
-                        console.error(error);
-                    }
-                })
+            try {
+
+                const response = await axios.get(process.env.NEXT_PUBLIC_USERHUB_BASE_URL +
+                    "/address/getAllAddressByUserId/" + user?.userId);
+                if (response.status === 200) {
+                    setAddressList(response.data);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+
         };
 
         getAddressList();
@@ -50,30 +49,28 @@ export function OrderAddressSelection() {
         router.push("placeOrder/editAddress")
     }
 
-    const onAddressSelected = (selectedAddressId: string) => {
+    const onAddressSelected = (selectedAddressId: number) => {
         currentSelectedAddressId = selectedAddressId
-        sessionStorage.setItem('selectedAddressId', selectedAddressId);
-        console.log("saved selectedAddressId : " + selectedAddressId);
     }
 
     return (
-        <div className="border-8 rounded-8xl divide-y-2 divide-yellow-500 pb-2.5">
+        <div className="ml-10 bg-amber-400 bg-transparent/50 p-4 divide-yellow-500 pb-2.5   ">
             <div>select delivery Address</div>
             <RadioGroup onValueChange={(value) => {
-                onAddressSelected(value);
+                onAddressSelected(parseInt(value));
             }}>
                 {addressList.map((address) => (
                     <div className="flex items-center" key={address.addressId}>
-                        <RadioGroupItem value={String(address.addressId)}
+                        <RadioGroupItem value={address.addressId.toString()}
                                         id={`radio-${address.addressId}`}/>
                         <Label className="pl-4" htmlFor={`radio-${address.addressId}`}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger>{address.addressType}</DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                    className="flex-row justify-between bg-amber-900 bg-black bg-transparent/75 text-white">
+                                    className="flex-row justify-between bg-amber-900   text-white">
                                     <DropdownMenuLabel>
                                         <div
-                                            className="relative flex flex-row justify-between border-black text-white text-2xl">
+                                            className=" flex flex-row justify-between border-black text-white text-2xl">
                                             <div className="">{address.addressType}</div>
                                             <button className="pr-2" onClick={() => {
                                                 onClickOnAddressEdit(address)
